@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: excalibur:latest
+    image: docker.io/erwanb44300/excalibur:latest
     working_dir: /opt/excalibur
     stdin_open: true
     tty: true

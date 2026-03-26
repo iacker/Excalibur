@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -137,7 +138,19 @@ def parse_legacy_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def get_root_dir() -> Path:
-    return Path(__file__).resolve().parent.parent
+    env_root = os.environ.get("EXCALIBUR_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+
+    cwd = Path.cwd().resolve()
+    if (cwd / "Cheetsheet.md" / "Nmap.md").exists():
+        return cwd
+
+    package_root = Path(__file__).resolve().parent.parent
+    if (package_root / "Cheetsheet.md" / "Nmap.md").exists():
+        return package_root
+
+    return cwd
 
 
 def build_paths(args: argparse.Namespace) -> object:
