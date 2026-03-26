@@ -17,6 +17,8 @@ from exegol_spector.reports import convert_xml_report_to_json
 from exegol_spector.runner import run_ansible_playbook
 
 from .banner import render_banner
+from .runtime import collect_runtime_command_status, extract_container_packages, extract_project_modules
+from .tui import run_tui
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -94,6 +96,20 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_parser.add_argument("--no-banner", action="store_true")
     inspect_parser.add_argument("--json-report", required=True)
     inspect_parser.set_defaults(handler=handle_inspect)
+
+    tools_parser = subparsers.add_parser(
+        "tools",
+        help="Show what the container installs and what project modules are present.",
+    )
+    tools_parser.add_argument("--no-banner", action="store_true")
+    tools_parser.set_defaults(handler=handle_tools)
+
+    tui_parser = subparsers.add_parser(
+        "tui",
+        help="Launch the terminal UI inspired by K9s.",
+    )
+    tui_parser.add_argument("--no-banner", action="store_true")
+    tui_parser.set_defaults(handler=handle_tui)
 
     return parser
 
@@ -342,10 +358,36 @@ def handle_inspect(args: argparse.Namespace) -> int:
     return 0
 
 
+def handle_tools(args: argparse.Namespace) -> int:
+    root_dir = get_root_dir()
+    container_packages = extract_container_packages(root_dir / "Dockerfile")
+    project_modules = extract_project_modules(root_dir / "Modules")
+    runtime_status = collect_runtime_command_status(["nmap", "ansible-playbook", "docker", "git"])
+
+    print("Container packages:")
+    for package in container_packages:
+        print(f"- {package}")
+
+    print("\nRuntime commands:")
+    for command, is_available in runtime_status.items():
+        print(f"- {command}: {'ok' if is_available else 'missing'}")
+
+    print("\nProject modules:")
+    for module in project_modules:
+        print(f"- {module}")
+
+    return 0
+
+
+def handle_tui(args: argparse.Namespace) -> int:
+    return run_tui(get_root_dir())
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    print_banner(args.no_banner)
+    if getattr(args, "command", "") != "tui":
+        print_banner(args.no_banner)
     return args.handler(args)
 
 

@@ -13,7 +13,7 @@ def ensure_command_available(command: str) -> None:
 def run_ansible_playbook(playbook_file: Path, working_directory: Path) -> None:
     ensure_command_available("ansible-playbook")
     subprocess.run(
-        ["ansible-playbook", str(playbook_file)],
+        ["ansible-playbook", "-i", "localhost,", "-c", "local", str(playbook_file)],
         cwd=working_directory,
         check=True,
     )

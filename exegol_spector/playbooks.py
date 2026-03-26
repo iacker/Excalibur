@@ -18,12 +18,17 @@ def render_nmap_command(command: ScanCommand, targets: list[str], xml_report_fil
 
 def build_playbook(profile: ScanProfile, targets: list[str], paths: RuntimePaths) -> list[dict]:
     tasks = []
+    seen_commands: set[str] = set()
     for command in profile.commands:
         rendered_command = render_nmap_command(command, targets, paths.xml_report_file)
+        if rendered_command in seen_commands:
+            continue
+        seen_commands.add(rendered_command)
         tasks.append(
             {
                 "name": f"Nmap | {command.label}",
                 "ansible.builtin.command": rendered_command,
+                "changed_when": False,
             }
         )
 
@@ -32,6 +37,7 @@ def build_playbook(profile: ScanProfile, targets: list[str], paths: RuntimePaths
             "name": f"Excalibur {profile.scan_type} scan",
             "hosts": "localhost",
             "gather_facts": False,
+            "connection": "local",
             "tasks": tasks,
         }
     ]
@@ -50,6 +56,7 @@ def _dump_playbook_yaml(playbook: list[dict]) -> str:
                 f"- name: {_quote_yaml(play['name'])}",
                 f"  hosts: {_quote_yaml(play['hosts'])}",
                 f"  gather_facts: {str(play['gather_facts']).lower()}",
+                f"  connection: {_quote_yaml(play['connection'])}",
                 "  tasks:",
             ]
         )
@@ -58,6 +65,7 @@ def _dump_playbook_yaml(playbook: list[dict]) -> str:
                 [
                     f"    - name: {_quote_yaml(task['name'])}",
                     f"      ansible.builtin.command: {_quote_yaml(task['ansible.builtin.command'])}",
+                    f"      changed_when: {str(task['changed_when']).lower()}",
                 ]
             )
     return "\n".join(lines) + "\n"
