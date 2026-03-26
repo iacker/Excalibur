@@ -1,14 +1,13 @@
-version: '3'
 services:
-  exegolspector:
-    image: exegolspector_custom
-    build: .
+  excalibur:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: excalibur:latest
+    working_dir: /opt/excalibur
+    stdin_open: true
+    tty: true
     volumes:
-      - ./data:/data # Assurez-vous de configurer ce volume selon vos besoins
-    networks:
-      - pentest_network
-
-networks:
-  pentest_network:
-    driver: bridge
-
+      - ./artifacts:/opt/excalibur/artifacts
+      - ./Cheetsheet.md:/opt/excalibur/Cheetsheet.md:ro
+    command: ["profiles"]

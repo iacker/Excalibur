@@ -1,137 +1,186 @@
-<p align="center">
-  <img src="https://github.com/Erwan923/ExegolSpector/assets/82095453/ac1a08ff-5cb0-443f-9c78-0fea204fa256" alt="Logo du projet" width="300" align="center">
-</p>
+# Excalibur
 
+```text
+                /\
+               /**\
+              /****\
+             /******\
+            /********\
+           /**********\
+          /____  ____\
+               ||
+               ||
+               ||
+               ||
+            ___||___
+           /   ||   \
+          /____||____\
+               /\
+              /  \
+```
 
+Knowledge-driven Nmap orchestration with Ansible and structured reporting.
 
+## What It Does
 
+Excalibur turns a Markdown knowledge base into reproducible Nmap runs.
 
-## ExegolSpector: Automatisation pour Tests d'Intrusion
+1. Select a scan profile.
+2. Extract Nmap commands from the local cheatsheet.
+3. Build a readable Ansible playbook.
+4. Run the scan.
+5. Convert Nmap XML into structured JSON.
+6. Enrich results with CVE lookups when requested.
 
-## Introduction
+The result is a much cleaner workflow than ad hoc shell history: repeatable, inspectable, and easy to containerize.
 
-ExegolSpector est une boite à outils de pentest conçue pour automatiser les tests d'intrusion et s'intégrer de manière fluide à divers OS de pentest.
-Une image custom avec un Dockerfile pour le contenaire Exegol à été crée dans le projet ainsi qu'un docker-compose pour une installation rapide. [Plus d'informations sur Exegol.]https://exegol.readthedocs.io/en/latest/exegol-image/tools.html
+## Why This Version Is Better
 
-Le script Python ExegolSpector.py utilise la fonction de parsing afin de lire les différentes cheetsheet au format markdown et génère un playbook Ansible en fonction du type de scan choisi puis génère un rapport au format JSON contenant les résultat du scnan nmap. 
-
-le script attack_orchestrtor.py lis ce JSON puis  en fonction de ports ouverts après ce scan lance les script correspondant. Le script cve_serach.py se charge de rechercher des CVE en lisant le rapport égalemment.   
-
-
-ExegolSpector facilite la réalisation de scans de réseaux sur plusieurs cibles, la génération dynamique de playbooks Ansible, le recherche et l'exploitation de vulnérabilités de manière efficace et automatisée.
-
-## Installation Rapide
-
-Pour commencer à utiliser ExegolSpector  :
-
-1. Clonez le dépôt :
-   ```bash
-   git clone https://github.com/VotreUsername/ExegolSpector.git
-
-2. Accédez au répertoire du projet
-   ```bash
-    cd ExegolSpector
-
-3. Définir le token Github dans le script ExegolSpector.py
-
-    ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/4218c581-91c7-49c6-8089-a1394d0b95f1)
-
-## Démonstration sur la box Archetype de Hack the box en une seul commande
-
-   ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/f3836208-ec4b-4dd3-a234-56d30d113db5)
-   
-   
-1. Choix du type de scan
-    ```bash
-     sudo python3 ExegolSpector.py --type ['basic','advanced' ] --targets [IP]
-
-2. Génération via les fichiers .md et lancement du Playbook Ansible intégrant les commandes nmap pour le type de scan basic (ou advanced au choix) : 
-
-   ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/0fda5db0-ff98-4752-854f-890a2c07cf7e)
-
-
-3. Rapport nmap_report.json et port ouverts :
-
-   ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/87ba7acf-79df-4781-b905-31463e952b13)
-
-
-
-
-   ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/a57407b9-bc65-4256-a3cf-ed130130add1)
-
-   
-
-
-   
-
-   
-5. Lancement automatique du script orchestrateur lançant les scripts correspondant au rapport nmap après lecture automatique :
-
-   ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/08dd58a0-be83-4c34-b1de-6e5b84eb0b7d)
-
-
-
-
-
- 7. Résultat du script smb_scan.sh et connexion au serveur SMB
-
-    ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/122354a3-4519-4132-9ab2-7896f63553f5)
-
-   
-
- 8. Récupération des identifants dans le ficher prod.dtsConfig
-
-    ![image](https://github.com/Erwan923/ExegolSpector/assets/82095453/2d7dd741-98c3-4da7-9514-3d17448de6d6)
-
- En examinant le contenu de ce fichier de configuration, nous repérons en clair le mot de passe de l'utilisateur sql_svc ,
- qui est M3g4c0rp123 , pour l'hôte ARCHETYPE . 
-   
-
-## Fonction Automatisée de Rapport et d'Attaque
-
-Après chaque scan, ExegolSpector effectue deux actions principales :
-
-1.Génération de Rapport JSON : Un rapport détaillant les résultats du scan est créé en format JSON, incluant les vulnérabilités détectées.
-
-2.Lancement Automatique des Scripts d'Attaque : Sur la base des vulnérabilités identifiées, des scripts d'attaque spécifiques sont exécutés automatiquement pour tester ces failles.
-
-3.Génération de rapport de penstest en json ou en formrat texte avec l'impplémentation de l' IA si choisi. 
+- Local knowledge source, no runtime GitHub dependency
+- Real multi-command CLI via [Excalibur.py](/Users/billard/Documents/ExegolSpector/Excalibur.py)
+- Backward-compatible legacy entrypoint via [ExegolSpector.py](/Users/billard/Documents/ExegolSpector/ExegolSpector.py)
+- Structured core package in [exegol_spector/](/Users/billard/Documents/ExegolSpector/exegol_spector)
+- Optional CVE enrichment in [Modules/cve_search.py](/Users/billard/Documents/ExegolSpector/Modules/cve_search.py)
+- Container-ready workflow through [Dockerfile](/Users/billard/Documents/ExegolSpector/Dockerfile) and [docker-compose.yml](/Users/billard/Documents/ExegolSpector/docker-compose.yml)
 
 ## Architecture
 
-![Architecture](https://github.com/Erwan923/ExegolSpector/assets/82095453/145da99a-a765-49e4-86da-36c539a0801e)
+CLI layer:
+- [excalibur/cli.py](/Users/billard/Documents/ExegolSpector/excalibur/cli.py)
+- [excalibur/banner.py](/Users/billard/Documents/ExegolSpector/excalibur/banner.py)
+- [Excalibur.py](/Users/billard/Documents/ExegolSpector/Excalibur.py)
 
+Core engine:
+- [exegol_spector/knowledge.py](/Users/billard/Documents/ExegolSpector/exegol_spector/knowledge.py)
+- [exegol_spector/playbooks.py](/Users/billard/Documents/ExegolSpector/exegol_spector/playbooks.py)
+- [exegol_spector/reports.py](/Users/billard/Documents/ExegolSpector/exegol_spector/reports.py)
+- [exegol_spector/nmap_report.py](/Users/billard/Documents/ExegolSpector/exegol_spector/nmap_report.py)
+- [exegol_spector/runner.py](/Users/billard/Documents/ExegolSpector/exegol_spector/runner.py)
 
-## Installation avec Docker
+Legacy extension points:
+- [Modules/attack_orchestrator.py](/Users/billard/Documents/ExegolSpector/Modules/attack_orchestrator.py)
+- [Modules/cve_search.py](/Users/billard/Documents/ExegolSpector/Modules/cve_search.py)
 
-1. Construire l'image Docker
-   ```bash
-   docker build -t exegolspector_custom .
-2. Lancer le conteneur
-   ```bash
-   docker run -it exegolspector_custom
-3. Pour plus de persitantce et de modification
-     ```bash
-     docker-compose up
-4. Et pour exécuter ExegolSpector dans ce conteneur en mode interactif
-   ```bash
-   docker-compose exec exegolspector bash
+## CLI
 
-## Tableau de suivi en temps réel
+List available profiles:
 
-1. En cours (Monitoring avec différents dashboard)
+```bash
+python3 Excalibur.py profiles
+```
 
+Check local prerequisites:
 
-## wiki
+```bash
+python3 Excalibur.py doctor
+```
 
-1. Site en cours de construction 
+Generate a playbook without running it:
 
-## Implémentation AI 
+```bash
+python3 Excalibur.py build --type basic --targets 127.0.0.1
+```
 
-1. Open interpreter
- 
-## Licence
+Run a scan end-to-end:
 
-Ce projet est sous licence Apache 2.0 - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+```bash
+python3 Excalibur.py run --type basic --targets 127.0.0.1
+```
 
-   
+Convert an existing XML report:
+
+```bash
+python3 Excalibur.py report --xml-report artifacts/nmap_report.xml
+```
+
+Inspect a JSON report:
+
+```bash
+python3 Excalibur.py inspect --json-report artifacts/nmap_report.json
+```
+
+Legacy compatibility:
+
+```bash
+python3 ExegolSpector.py --type basic --targets 127.0.0.1 --dry-run
+```
+
+## Docker
+
+Build the image:
+
+```bash
+docker build -t excalibur .
+```
+
+Run the CLI in a disposable container:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd)/artifacts:/opt/excalibur/artifacts" \
+  excalibur profiles
+```
+
+Build a playbook from the container:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd)/artifacts:/opt/excalibur/artifacts" \
+  excalibur build --type basic --targets 127.0.0.1
+```
+
+Run with Docker Compose:
+
+```bash
+docker compose run --rm excalibur profiles
+docker compose run --rm excalibur build --type basic --targets 127.0.0.1
+```
+
+The container includes:
+- Python 3.11
+- `nmap`
+- `ansible`
+- `git`
+- project Python dependencies
+
+## Outputs
+
+Generated artifacts are written to `artifacts/`:
+
+- `nmap_playbook.yml`
+- `nmap_report.xml`
+- `nmap_report.json`
+- `scan_metadata.json`
+- `vulnerabilities_report.json`
+
+## Local Development
+
+Install Python dependencies:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+Run tests:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/pycache python3 -m unittest discover -s tests
+```
+
+Run syntax checks:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/pycache python3 -m py_compile \
+  Excalibur.py \
+  ExegolSpector.py \
+  excalibur/*.py \
+  exegol_spector/*.py \
+  Modules/attack_orchestrator.py \
+  Modules/cve_search.py
+```
+
+## Current Limits
+
+- The current Nmap cheatsheet does not yet cover every advertised profile.
+- Several historical scripts under [Modules/](/Users/billard/Documents/ExegolSpector/Modules) remain outside the maintained core.
+- Ansible is still the execution backbone. A future step would be packaging via `pyproject.toml` and shipping a native console entrypoint.
