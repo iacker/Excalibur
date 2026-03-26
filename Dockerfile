@@ -17,8 +17,9 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+RUN pip install --no-cache-dir .
 
 RUN mkdir -p /workspace/artifacts
 
-ENTRYPOINT ["python3", "Excalibur.py"]
+ENTRYPOINT ["excalibur"]
 CMD ["profiles"]

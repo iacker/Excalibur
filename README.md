@@ -1,5 +1,10 @@
 # Excalibur
 
+[![Python](https://img.shields.io/badge/python-3.9%2B-3776AB.svg)](#local-development)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![CLI](https://img.shields.io/badge/interface-CLI-black.svg)](#cli)
+[![Docker](https://img.shields.io/badge/runtime-Docker-2496ED.svg)](#docker)
+
 ```text
                 /\
                /**\
@@ -21,34 +26,34 @@
 
 Knowledge-driven Nmap orchestration with Ansible and structured reporting.
 
-## What It Does
+## Overview
 
-Excalibur turns a Markdown knowledge base into reproducible Nmap runs.
+Excalibur turns a local Markdown knowledge base into reproducible Nmap runs:
 
-1. Select a scan profile.
-2. Extract Nmap commands from the local cheatsheet.
-3. Build a readable Ansible playbook.
-4. Run the scan.
-5. Convert Nmap XML into structured JSON.
-6. Enrich results with CVE lookups when requested.
+1. pick a scan profile
+2. extract `nmap` commands from the knowledge file
+3. generate a readable Ansible playbook
+4. run the scan
+5. convert Nmap XML into structured JSON
+6. optionally enrich the report with CVE lookups
 
-The result is a much cleaner workflow than ad hoc shell history: repeatable, inspectable, and easy to containerize.
+The goal is simple: make scanning workflows easier to inspect, easier to repeat, and much easier to ship in a clean container.
 
-## Why This Version Is Better
+## Highlights
 
-- Local knowledge source, no runtime GitHub dependency
-- Real multi-command CLI via [Excalibur.py](/Users/billard/Documents/ExegolSpector/Excalibur.py)
-- Backward-compatible legacy entrypoint via [ExegolSpector.py](/Users/billard/Documents/ExegolSpector/ExegolSpector.py)
-- Structured core package in [exegol_spector/](/Users/billard/Documents/ExegolSpector/exegol_spector)
-- Optional CVE enrichment in [Modules/cve_search.py](/Users/billard/Documents/ExegolSpector/Modules/cve_search.py)
-- Container-ready workflow through [Dockerfile](/Users/billard/Documents/ExegolSpector/Dockerfile) and [docker-compose.yml](/Users/billard/Documents/ExegolSpector/docker-compose.yml)
+- multi-command CLI with profile discovery, build, run, report, inspect, and doctor workflows
+- startup banner and installable `excalibur` command
+- local knowledge source, no runtime GitHub fetch dependency
+- structured core modules instead of a single monolithic script
+- backward-compatible legacy entrypoint via [ExegolSpector.py](/Users/billard/Documents/ExegolSpector/ExegolSpector.py)
+- container-ready execution via [Dockerfile](/Users/billard/Documents/ExegolSpector/Dockerfile)
 
 ## Architecture
 
-CLI layer:
+Product-facing CLI:
+- [Excalibur.py](/Users/billard/Documents/ExegolSpector/Excalibur.py)
 - [excalibur/cli.py](/Users/billard/Documents/ExegolSpector/excalibur/cli.py)
 - [excalibur/banner.py](/Users/billard/Documents/ExegolSpector/excalibur/banner.py)
-- [Excalibur.py](/Users/billard/Documents/ExegolSpector/Excalibur.py)
 
 Core engine:
 - [exegol_spector/knowledge.py](/Users/billard/Documents/ExegolSpector/exegol_spector/knowledge.py)
@@ -66,37 +71,37 @@ Legacy extension points:
 List available profiles:
 
 ```bash
-python3 Excalibur.py profiles
+excalibur profiles
 ```
 
-Check local prerequisites:
+Validate local prerequisites:
 
 ```bash
-python3 Excalibur.py doctor
+excalibur doctor
 ```
 
-Generate a playbook without running it:
+Generate a playbook without executing it:
 
 ```bash
-python3 Excalibur.py build --type basic --targets 127.0.0.1
+excalibur build --type basic --targets 127.0.0.1
 ```
 
 Run a scan end-to-end:
 
 ```bash
-python3 Excalibur.py run --type basic --targets 127.0.0.1
+excalibur run --type basic --targets 127.0.0.1
 ```
 
 Convert an existing XML report:
 
 ```bash
-python3 Excalibur.py report --xml-report artifacts/nmap_report.xml
+excalibur report --xml-report artifacts/nmap_report.xml
 ```
 
 Inspect a JSON report:
 
 ```bash
-python3 Excalibur.py inspect --json-report artifacts/nmap_report.json
+excalibur inspect --json-report artifacts/nmap_report.json
 ```
 
 Legacy compatibility:
@@ -129,19 +134,39 @@ docker run --rm -it \
   excalibur build --type basic --targets 127.0.0.1
 ```
 
-Run with Docker Compose:
+Use Compose:
 
 ```bash
 docker compose run --rm excalibur profiles
 docker compose run --rm excalibur build --type basic --targets 127.0.0.1
 ```
 
-The container includes:
+The image includes:
 - Python 3.11
 - `nmap`
 - `ansible`
 - `git`
-- project Python dependencies
+- the installed `excalibur` entrypoint
+
+## Installation
+
+Local editable install:
+
+```bash
+python3 -m pip install -e .
+```
+
+Classic dependency install:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+Version check:
+
+```bash
+excalibur --version
+```
 
 ## Outputs
 
@@ -154,12 +179,6 @@ Generated artifacts are written to `artifacts/`:
 - `vulnerabilities_report.json`
 
 ## Local Development
-
-Install Python dependencies:
-
-```bash
-python3 -m pip install -r requirements.txt
-```
 
 Run tests:
 
@@ -181,6 +200,6 @@ PYTHONPYCACHEPREFIX=/tmp/pycache python3 -m py_compile \
 
 ## Current Limits
 
-- The current Nmap cheatsheet does not yet cover every advertised profile.
-- Several historical scripts under [Modules/](/Users/billard/Documents/ExegolSpector/Modules) remain outside the maintained core.
-- Ansible is still the execution backbone. A future step would be packaging via `pyproject.toml` and shipping a native console entrypoint.
+- the current Nmap cheatsheet does not yet cover every advertised profile
+- several historical scripts under [Modules/](/Users/billard/Documents/ExegolSpector/Modules) remain outside the maintained core
+- Ansible is still the execution backbone; a future step could be richer profile schemas and more structured execution backends

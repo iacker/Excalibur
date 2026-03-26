@@ -9,9 +9,9 @@ app = Flask(__name__)
 # Définition de la gauge Prometheus
 ports_open_gauge = Gauge('nmap_ports_open', 'Number of open ports', ['target'])
 
-# Fonction pour charger et traiter le fichier JSON généré par ExegolSpector
+# Fonction pour charger et traiter le fichier JSON généré par Excalibur
 def load_json_results():
-    # Chemin vers le fichier JSON généré par ExegolSpector
+    # Chemin vers le fichier JSON généré par Excalibur
     json_file_path = 'nmap_report.json'
     try:
         with open(json_file_path, 'r') as json_file:

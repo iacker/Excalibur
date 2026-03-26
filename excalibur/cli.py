@@ -7,12 +7,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+from excalibur import __version__
 from exegol_spector.config import build_runtime_paths
 from exegol_spector.knowledge import SCAN_HEADINGS, extract_scan_profile, load_markdown_file
 from exegol_spector.nmap_report import parse_host_reports
 from exegol_spector.playbooks import build_playbook, render_nmap_command, write_playbook
 from exegol_spector.reports import convert_xml_report_to_json
-from exegol_spector.runner import ensure_command_available, run_ansible_playbook
+from exegol_spector.runner import run_ansible_playbook
 
 from .banner import render_banner
 
@@ -26,6 +27,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-banner",
         action="store_true",
         help="Disable the startup banner.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"Excalibur {__version__}",
     )
 
     subparsers = parser.add_subparsers(dest="command", required=True)
